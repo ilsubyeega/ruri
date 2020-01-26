@@ -226,4 +226,38 @@ Map Fail
 
 
 
-^C
+^C[32m                    _
+                   (_)
+[36m _ __ [32m _   _ [36m _ __  [32m_
+[36m| '__|[32m| | | |[36m| '__|[32m| |
+[36m| |   [32m| |_| |[36m| |   [32m| |
+[36m|_|   [32m \__,_|[36m|_|   [32m|_|   [0mGuaranteed to aggravate all sides!
+
+   > Compiled with [35mclang++[0m on Jan 27 2020 00:58:51.
+
+Caching ranks:  0/4Caching ranks:  1/4Caching ranks:  2/4Caching ranks:  3/4Caching ranks:  4/4
+Caching relax ranks:    0/4Caching relax ranks:    1/4Caching relax ranks:    2/4Caching relax ranks:    3/4Caching relax ranks:    4/4
+Updated 124 usernames in the cache
+Creating LazyThread
+Creating Aria Thread
+Creating API thread
+[35mAria> [0mPossible update to beatmap set.
+[0m[35mAria> [0mGetting beatmap data from the osu!API
+[0m[35mAria> [0m0 diffs removed.
+[0m[35mAria> [0mGot data. Attempting grab again.
+[0m[35mAria> [0mGrab success.
+[0mMap Fail
+[35mAria> [0mPossible update to beatmap set.
+[0m[35mAria> [0mGetting beatmap data from the osu!API
+[0m[35mAria> [0m0 diffs removed.
+[0m[35mAria> [0mGot data. Attempting grab again.
+[0m[35mAria> [0mGrab success.
+[0mMap Fail
+Could not find the map at all.
+Map Fail
+[35mAria> [0mPossible update to beatmap set.
+[0m[35mAria> [0mGetting beatmap data from the osu!API
+[0m[35mAria> [0m0 diffs removed.
+[0m[35mAria> [0mGot data. Attempting grab again.
+[0m[35mAria> [0mGrab success.
+[0mMap Fail
