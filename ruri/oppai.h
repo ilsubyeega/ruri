@@ -1201,10 +1201,10 @@ void p_end(ezpp_t ez) {
 	/* cs buff (originally from osuElements) */
 	if (radius < CIRCLESIZE_BUFF_TRESHOLD) {
 
-		if(ez->mods & MODS_RX)
+		/*if(ez->mods & MODS_RX)
 			scaling_factor *=
 			1.0f + al_min((CIRCLESIZE_BUFF_TRESHOLD - radius), 7.125f) / 36.25f;
-		else scaling_factor *=
+		else*/ scaling_factor *=
 			1.0f + al_min((CIRCLESIZE_BUFF_TRESHOLD - radius), 5.0f) / 50.0f;
 	}
 
@@ -1972,7 +1972,7 @@ int pp_std(ezpp_t ez) {
 		0.4f * al_min(1.0f, nobjects_over_2k) +
 		(ez->nobjects > 2000 ? (float)log10(nobjects_over_2k) * 0.5f : 0.0f)
 		);
-	float miss_penality = (ez->mods & MODS_RX) ? (float)pow(0.97f, ez->nmiss + (ez->n50 * 0.35f)) : (float)pow(0.97f, ez->nmiss);
+	float miss_penality = /*(ez->mods & MODS_RX) ? (float)pow(0.97f, ez->nmiss + (ez->n50 * 0.35f)) :*/ (float)pow(0.97f, ez->nmiss);
 	float combo_break = (
 		(float)pow(ez->combo, 0.8f) / (float)pow(ez->max_combo, 0.8f)
 		);
@@ -2018,12 +2018,12 @@ int pp_std(ezpp_t ez) {
 	/* ar bonus -------------------------------------------------------- */
 	ar_bonus = 1.0f;
 
-	if (ez->mods & MODS_RX){/* high ar bonus */
+	/*if (ez->mods & MODS_RX){ high ar bonus 
 		if (ez->ar > 10.7f)
 			ar_bonus += 0.45f * (ez->ar - 10.7f);
 		else if (ez->ar < 8.5f)
 			ar_bonus += 0.025f * (8.5f - ez->ar);		
-	}else if (ez->ar > 10.33f)
+	}else*/ if (ez->ar > 10.33f)
 		ar_bonus += 0.3f * (ez->ar - 10.33f);
 	else if (ez->ar < 8.f)
 		ar_bonus += 0.01f * (8.f - ez->ar);
@@ -2066,14 +2066,14 @@ int pp_std(ezpp_t ez) {
 	* and insignificant otherwise)
 	* 1.0 - 1.0571
 	* 1.0+\frac{\left(10.0-x\right)^2}{17.5}
-	*/
+	
 	if(ez->mods & MODS_RX)
 		od_bonus = (ez->od > 10.0f) ? 1.0f + (float)pow(10.0f - ez->od, 2.0f) / 12.5f : 1.0f;
-
+	*/
 	/* akatsuki's main accuracy / aim pp crossover | 0.6 - 1.1 (mymaxed to 0.75)
 	:( 0.6+\frac{x^{24}}{2}
 	*/
-	const float aim_crosscheck = (ez->mods & MODS_RX) ? al_max(0.75f, 0.6f + (float)pow(real_acc, 3.0f) / 2.0f) : 1.f;
+	const float aim_crosscheck = /*(ez->mods & MODS_RX) ? al_max(0.75f, 0.6f + (float)pow(real_acc, 3.0f) / 2.0f) :*/ 1.f;
 
 	ez->aim_pp *= acc_bonus;
 	ez->aim_pp *= od_bonus;
@@ -2098,9 +2098,9 @@ int pp_std(ezpp_t ez) {
 	/* acc pp ---------------------------------------------------------- */
 	/* arbitrary values tom crafted out of trial and error */
 
-	if(ez->mods & MODS_RX)
+	/*if(ez->mods & MODS_RX)
 		 ez->acc_pp = (float)pow(1.52163f, 5.0f + ez->od / 2.0f) * (float)pow(real_acc, 18.0f) * 2.83f;
-	else ez->acc_pp = (float)pow(1.52163f, ez->od)			     * (float)pow(real_acc, 24.0f) * 2.83f;
+	else */ez->acc_pp = (float)pow(1.52163f, ez->od)			     * (float)pow(real_acc, 24.0f) * 2.83f;
 
 	/* length bonus (not the same as speed/aim length bonus) */
 	ez->acc_pp *= al_min(1.15f, (float)pow(ncircles / 1000.0f, 0.3f));
@@ -2113,7 +2113,7 @@ int pp_std(ezpp_t ez) {
 	if (ez->mods & MODS_NF) final_multiplier *= 0.90f;
 	if (ez->mods & MODS_SO) final_multiplier *= 0.95f;
 
-	if (ez->mods & MODS_RX) {
+	/*if (ez->mods & MODS_RX) {
 		ez->pp = (float)(
 			pow(
 				pow(ez->aim_pp, 1.158f) +
@@ -2122,7 +2122,7 @@ int pp_std(ezpp_t ez) {
 			)
 			);
 		
-	}else ez->pp = (float)(
+	}else */ez->pp = (float)(
 		pow(
 			pow(ez->aim_pp, 1.1f) +
 			pow(ez->speed_pp, 1.1f) +
