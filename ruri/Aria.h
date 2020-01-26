@@ -226,7 +226,7 @@ struct _LeaderBoardCache{
 		MD5 = REMOVEQUOTES(MD5);
 
 		const bool TableOffset = (RELAX_MODE && s.Mods & Relax);
-
+		
 		if (MD5.size() != 32){
 			printf("AddScore Incorrect md5 length\n");//should never happen
 			return 0;
@@ -321,10 +321,10 @@ struct _LeaderBoardCache{
 		const DWORD NewRank = (!NewTop) ? 0 : GetRankByUID<true>(s.UserID);
 		
 		ScoreLock.unlock();
-
-		if (!s.Loved && NewRank == 1){
+		const std::string ModeName = (TableOffset==1) ? GameModeNames[s.GameMode] + "(relax)" : GameModeNames[s.GameMode];
+		if (NewRank == 1){
 			chan_Announce.Bot_SendMessage(
-				"[https://osu.ppy.sh/u/" + std::to_string(s.UserID) + " " + GetUsernameFromCache(s.UserID) + "] has achieved #1 on [https://osu.ppy.sh/b/"+ std::to_string(BID) +" "+ MapName +"] ( " + RoundTo2(s.pp) + "pp )");
+				"[" + ModeName  + "] " + " [https://osu.ppy.sh/u/" + std::to_string(s.UserID) + " " + GetUsernameFromCache(s.UserID) + "] 님이 [https://osu.ppy.sh/b/"+ std::to_string(BID) +" "+ MapName +"] 맵에서 1위를 달성하였습니다. ( " + RoundTo2(s.pp) + "pp )");
 			printf("1st\n");
 		}
 		if (Ret){
@@ -1261,7 +1261,7 @@ void ScoreServerHandle(const _HttpRes &res, _Con s){
 					 MapStars = (sData.Mods & (NoFail | Relax | Relax2)) ? 0.f : ezpp_stars(ez);
 
 				}else{
-					constexpr auto b = PacketBuilder::CT::String_Packet(Packet::Server::notification, "That gamemode is currently not supported for pp.\nYour score will still be saved for future calculations.");
+					constexpr auto b = PacketBuilder::CT::String_Packet(Packet::Server::notification, "해당 게임모드는 현재 적용되지 않습니다.\n추후에 PP계산을 위해 저장됩니다.");
 					u->addQueArray(b);
 					goto SENDSCORE;
 				}

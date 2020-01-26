@@ -579,7 +579,15 @@
 
 				return "Added command to que.";
 			}
+			case WSTI("!broadcast"):{
+				if (Split.size() < 1)
+					return "!broadcast <text>";
 
+				chan_Announce.Bot_SendMessage(Split[1]);
+
+				return "Added command to que.";
+			}
+			
 			default:
 				break;
 			}
