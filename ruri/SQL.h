@@ -104,7 +104,7 @@ struct _SQLCon {
 
 		}
 		catch (sql::SQLException & e) {
-			printf("SQLERROR:%i\n", e.getErrorCode());
+			printf("SQLERROR:%i\n%s\n", e.getErrorCode(), Query.c_str());
 		}
 		if (s)delete s;
 
@@ -201,6 +201,8 @@ struct _SQLKey {
 	_SQLKey(T&& Key, const int64_t Value) : Key(std::forward<T>(Key)), Value(_M(std::to_string(Value))), Text(0) {}
 
 };
+
+
 
 const std::string SQL_INSERT(const std::string& Table, const VEC(_SQLKey)& Values) {
 	return "INSERT INTO " + Table + " (" + [&] {

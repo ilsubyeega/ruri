@@ -90,6 +90,10 @@ namespace r_API {
 		const int Start = *(int*)& p[Count]; Count += 4;
 		const int EndRange = *(int*)& p[Count]; Count += 4;
 
+		printf("GM: %i\n", GM);
+		printf("Start: %i\n", Start);
+		printf("EndRange: %i\n", EndRange);
+
 		std::shared_lock L(RankList[GM]);
 
 		const int End = al_min(RankList[GM].List.size(), EndRange);
@@ -139,6 +143,7 @@ namespace r_API {
 			while (Count < p.size()) {
 
 				const byte PacketID = *(byte*)&p[Count]; Count++;
+				printf("PacketID: %i\n", PacketID);
 
 				switch (API_ID(PacketID)){
 
@@ -158,6 +163,7 @@ namespace r_API {
 
 				case API_ID::User_GetStatus:
 
+					printf("uid: %i\n", *(DWORD*)& p[Count]);
 					Ref.Reset(GetUserFromID(*(DWORD*)& p[Count]), 1);
 
 					Count += 4;

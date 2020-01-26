@@ -11,13 +11,13 @@ struct _HttpRes{
 
 	std::vector<std::pair<std::string_view,std::string_view>> Headers;
 
-	__inline const std::string_view GetHeaderValue(const std::string& Name)const noexcept{
+	__inline const std::string_view GetHeaderValue(const std::string& Name)const{
 
 		for (const auto& [Text, Value] : Headers)
 			if (Text == Name)
 				return Value;
 
-		return std::string_view{};
+		return std::string_view();
 	}
 	
 	_HttpRes(){}
@@ -26,26 +26,15 @@ struct _HttpRes{
 template<typename T>
 	const std::string ConstructResponse(const DWORD Code, const std::vector<std::pair<std::string, std::string>> &Headers, const T& Body) {
 
-		std::string Return{
-			[=]{
-				switch (Code) {
-					case 200:
-					default:
-						return "HTTP/1.0 200 OK" MNL;
+		std::string Return = [=]{
 
-					case 404:
-						return "HTTP/1.0 404 Not Found" MNL;
-
-					case 405:
-						return "HTTP/1.0 405 Method Not Allowed" MNL;
-
-					case 408:						
-						return "HTTP/1.0 408 Request Timeout" MNL;
-				}
-			}()
-		};
+			if(Code == 200)return "HTTP/1.0 200 OK" MNL;
+			if (Code == 404)return "HTTP/1.0 404 Not Found" MNL;
+			if (Code == 405)return "HTTP/1.0 405 Method Not Allowed" MNL;
+			if (Code == 408)return "HTTP/1.0 408 Request Timeout" MNL;
 		
-		Return.reserve(48 + Return.size() + Body.size());
+			return "HTTP/1.0 200 OK" MNL;
+		}(); Return.reserve(48 + Return.size() + Body.size());
 
 		for (auto& [Text, Value] : Headers)
 			Return += Text + ": " + Value + MNL;
@@ -67,24 +56,19 @@ struct _Con{
 
 	const bool RecvData(_HttpRes &res)const {
 		
-		size_t pSize = 0;
+		DWORD pSize = 0;
+		int pLength = MAX_PACKET_LENGTH;
 
 		res.Raw.reserve(USHORT(-1));
 
-		for (;;) {
-
+		do {
 			res.Raw.resize(pSize + MAX_PACKET_LENGTH);
 
-			const auto pLength = recv(s, (char*)res.Raw.data() + pSize, MAX_PACKET_LENGTH, 0);
-
-			if (pLength <= 0)
-				break;
+			if ((pLength = recv(s, (char*)& res.Raw[pSize], MAX_PACKET_LENGTH, 0)) <= 0)break;
 
 			pSize += pLength;
 
-			if (pLength != MAX_PACKET_LENGTH)
-				break;
-		}
+		} while (pLength == MAX_PACKET_LENGTH);
 
 		if (pSize == 0)
 			return 0;
@@ -96,74 +80,71 @@ struct _Con{
 		if (!DATA.size() || !DATA[0].size())
 			return 0;
 
-		if(const auto PageName = Explode_View(DATA[0], ' ', 8); PageName.size() > 1)
-			res.Host = std::string_view((const char*)PageName[1].data(), PageName[1].size());
+		if(const auto PageName = Explode_View(DATA[0], ' ', 8); PageName.size() > 1 && PageName[1].size())
+			res.Host = std::string_view((const char*)&PageName[1][0], PageName[1].size());
 
-		size_t Offset = 1;
+		int CurrentOffset = 1;
 
-		{//Headers
+		res.Headers.reserve(32);
 
-			res.Headers.reserve(32);
+		//Headers
+		for (int i = CurrentOffset; i < DATA.size(); i++){
 
-			for (; Offset < DATA.size(); Offset++){
-
-				if (DATA[Offset].size() <= 1)
-					break;
-
-				if (const auto Head = Explode_View(DATA[Offset], ':', 2); Head.size() < 2 || !Head[0].size() || !Head[1].size())
-					continue;
-				else
-					res.Headers.emplace_back(Head[0], Head[1]);
-			}
+			if (CurrentOffset = i; DATA[i].size() <= 1)
+				break;
+			
+			if (const auto Head = Explode_View(DATA[i], ':', 2);
+				Head.size() < 2 || !Head[0].size() || !Head[1].size())
+				continue;
+			else
+				res.Headers.push_back({
+					Head[0],
+					Head[1]
+				});
 		}
 
-		if (++Offset < DATA.size() && !DATA[Offset - 1].size())
-			res.Body = std::string_view(DATA[Offset].data(), size_t(res.Raw.data() + res.Raw.size()) - size_t(DATA[Offset].data()));
+		if (++CurrentOffset < DATA.size() && !DATA[CurrentOffset - 1].size())
+			res.Body = std::string_view(DATA[CurrentOffset].data(), size_t(res.Raw.data() + res.Raw.size()) - size_t(DATA[CurrentOffset].data()));
 
 		return 1;
 	}
 
-	bool SendRawData(const void* Data, const size_t Size) noexcept{
-		
-		if (unlikely(!s))
-			return 0;
+	bool SendRawData(const void* vData, const DWORD Size){
 
-		size_t Count = 0;
+		const char* Data = (const char*)vData;
 
-		while (Count < Size){
+		if (DWORD Count = 0; likely(s)){
 
-			const auto Sent = send(s, (const char*)Data + Count, al_min(Size - Count, MAX_PACKET_LENGTH), 0);
+			while (Count < Size)
+				if (int Sent = send(s, (char*)&Data[Count], al_min(Size - Count, MAX_PACKET_LENGTH), 0);
+					Sent != SOCKET_ERROR)
+					Count += Sent;
+				else
+					return 0;
 
-			if (unlikely(Sent == SOCKET_ERROR))
-				return 0;
-
-			Count += Sent;
+			return 1;
 		}
-
-		return 1;
+		return 0;
 	}
 
 template<typename T>
-	bool SendData(const T& Data) noexcept{
+	bool SendData(const T& Data){
 
-		if (unlikely(!s))
-			return 0;
+		if (DWORD Count = 0; likely(s)){
 
-		size_t Count = 0; const size_t Size = Data.size();
+			const DWORD Size = Data.size();
 
-		const char* const DataStart = (char*)Data.data();
+			while (Count < Size){
+				if (int Sent = send(s, (const char*)&Data[Count], al_min(Size - Count, MAX_PACKET_LENGTH), 0);
+					Sent != SOCKET_ERROR)
+					Count += Sent;
+				else break;
+			}
 
-		while (Count < Size){
-
-			const auto Sent = send(s, DataStart + Count, al_min(Size - Count, MAX_PACKET_LENGTH), 0);
-
-			if (Sent == SOCKET_ERROR)
-				return 0;
-
-			Count += Sent;
+			return 1;
 		}
 
-		return 1;
+		return 0;
 	}
 
 	void Dis(){

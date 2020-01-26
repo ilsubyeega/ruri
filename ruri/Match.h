@@ -330,13 +330,7 @@ namespace bPacket{
 		}
 
 }
-
-namespace Bancho_Event {
-	namespace Client_Event {
-		void matchStart(_User* tP);
-	}
-}
-
+void Event_client_matchStart(_User *tP);
 const std::string ProcessCommand(_User* u, const std::string_view Command, DWORD &PrivateRes);
 
 
@@ -430,7 +424,7 @@ std::string ProcessCommandMultiPlayer(_User* u, const std::string_view Command, 
 				if (m->Settings.BeatmapID == -1)
 					return "Starting a match without a map being selected is hard.";
 			}
-			Bancho_Event::Client_Event::matchStart(u);
+			Event_client_matchStart(u);
 			PrivateRes = 0;
 			return "Host has forced the match to start.";
 		}

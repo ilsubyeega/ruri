@@ -2,11 +2,8 @@
 #ifndef _H_JSON
 #define _H_JSON
 
-
-#define H Return += R(s[i] ^ i) << ((i & (sizeof(R)-1)) << 3)
-
 template<typename R = u32, typename T>
-_inline constexpr R WeakStringToInt(const T& s) noexcept {
+_inline constexpr R WeakStringToInt(const T& s) {
 
 	static_assert(std::is_unsigned<R>::value,"WeakStringToInt is only allowed with unsigned types.");
 
@@ -24,24 +21,10 @@ _inline constexpr R WeakStringToInt(const T& s) noexcept {
 		for (size_t i = 0; i < sizeof(T) - 1; i++) H;
 	else for (size_t i = 0, Size(s.size()); i < Size; i++) H;
 
+	#undef H
+
 	return Return;
 }
-
-[[nodiscard]] constexpr u32 operator"" _HU(const char* s, size_t Size) noexcept{
-	typedef u32 R;
-	R Return = R();
-	for (size_t i = 0; i < Size; i++) H;
-	return Return;
-}
-[[nodiscard]] constexpr size_t operator"" _HUST(const char* s, size_t Size) noexcept {
-	typedef size_t R;
-	R Return = R();
-	for (size_t i = 0; i < Size; i++) H;
-	return Return;
-}
-
-
-#undef H
 
 #define WSTI WeakStringToInt
 //#define CWSTI(type, s) CONSTX<type,WSTI<type>(s)>::value Why clang
