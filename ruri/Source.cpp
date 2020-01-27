@@ -385,8 +385,8 @@ const bool RELAX_MODE = 0;
 #endif
 
 const std::string GameModeNames[] = {
-	"osu!","osu!taiko","osu!catch","osu!mania"
-	"osu!relax","osu!taiko(relax)","osu!catch(relax)","osu!mania(relax)"
+	"osu!","osu!taiko","osu!catch","osu!mania",
+	"osu!(relax)","osu!taiko(relax)","osu!catch(relax)","osu!mania(relax)"
 };
 const std::string Stats_Table_Name[] = {
 	"users_stats",

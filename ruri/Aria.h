@@ -1227,28 +1227,32 @@ void ScoreServerHandle(const _HttpRes &res, _Con s){
 				u.User->Stats[sOffset].PlayCount++;
 				u.User->Stats[sOffset].tScore += sData.Score;
 
-				if (sData.GameMode < 2){
+					if (sData.GameMode < 2){
 				
-					ezpp_t ez = ezpp_new();
+						ezpp_t ez = ezpp_new();
 
-					if (!ez) {
-						LogError("Failed to load ezpp" "Aria");
-						return TryScoreAgain(s);
+						if (!ez) {
+							LogError("Failed to load ezpp" "Aria");
+							return TryScoreAgain(s);
+						}
+
+						ezpp_set_mods(ez, sData.Mods);
+						ezpp_set_nmiss(ez, sData.countMiss);
+						ezpp_set_accuracy(ez, sData.count100, sData.count50);
+						ezpp_set_combo(ez, sData.MaxCombo);
+						ezpp_set_mode(ez, sData.GameMode);
+
+						if (!OppaiCheckMapDownload(ez, BD->BeatmapID)){
+							printf("Could not download\n");
+							return TryScoreAgain(s);
+						}
+					
+						PP = ezpp_pp(ez);
+						MapStars = (sData.Mods & (NoFail | Relax | Relax2)) ? 0.f : ezpp_stars(ez);
+					} else {
+						PP = 1.f;
+						MapStars = 0.f;
 					}
-
-					ezpp_set_mods(ez, sData.Mods);
-					ezpp_set_nmiss(ez, sData.countMiss);
-					ezpp_set_accuracy(ez, sData.count100, sData.count50);
-					ezpp_set_combo(ez, sData.MaxCombo);
-					ezpp_set_mode(ez, sData.GameMode);
-
-					if (!OppaiCheckMapDownload(ez, BD->BeatmapID)){
-						printf("Could not download\n");
-						return TryScoreAgain(s);
-					}
-				
-					PP = ezpp_pp(ez);
-
 					if (!Loved && PP < 30000.f){
 						if (((sData.Mods & Relax) && PP > 5600.f) || (!(sData.Mods & Relax) && PP > 1400.f)){
 
@@ -1258,13 +1262,8 @@ void ScoreServerHandle(const _HttpRes &res, _Con s){
 						}
 					}
 
-					 MapStars = (sData.Mods & (NoFail | Relax | Relax2)) ? 0.f : ezpp_stars(ez);
+					 
 
-				}else{
-					constexpr auto b = PacketBuilder::CT::String_Packet(Packet::Server::notification, "해당 게임모드는 현재 적용되지 않습니다.\n추후에 PP계산을 위해 저장됩니다.");
-					u->addQueArray(b);
-					goto SENDSCORE;
-				}
 			}
 			_ScoreCache sc(sData,u.User->UserID,PP);
 			
