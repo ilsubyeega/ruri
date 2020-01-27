@@ -322,9 +322,9 @@ struct _LeaderBoardCache{
 		
 		ScoreLock.unlock();
 
-		if (!s.Loved && NewRank == 1 && ScoreCache.size() > 5)
+		if (NewRank == 1 && ScoreCache.size() > 1)
 			chan_Announce.Bot_SendMessage(
-				"[https://osu.ppy.sh/u/" + std::to_string(s.UserID) + " " + GetUsernameFromCache(s.UserID) + "] has achieved #1 on [https://osu.ppy.sh/b/"+ std::to_string(BID) +" "+ MapName +"] ( " + RoundTo2(s.pp) + "pp )");
+				"[" + ((TableOffset == 1) ? GameModeNames[s.GameMode] + "(relax)" : GameModeNames[s.GameMode]) + "] " + " [https://osu.ppy.sh/u/" + std::to_string(s.UserID) + " " + GetUsernameFromCache(s.UserID) + "] 님이 [https://osu.ppy.sh/b/" + std::to_string(BID) + " " + MapName + "] 맵에서 1위를 달성하였습니다. ( " + RoundTo2(s.pp) + "pp )");
 
 		if (Ret){
 			AppendScoreToString(Ret, LastRank, LastScore, 0);
