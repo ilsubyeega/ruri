@@ -1264,20 +1264,22 @@ void ScoreServerHandle(const _HttpRes &res, _Con s){
 				
 					PP = ezpp_pp(ez);
 
-					if (!Loved && PP < 30000.f){
-						if (((sData.Mods & Relax) && PP > 1400.f) || (!(sData.Mods & Relax) && PP > 700.f)){
-
-							UpdateQue.emplace_back(UserID, (u32)0, _UserUpdate::Restrict, (size_t)new std::string("Restricted for too much pp in a single play: " + std::to_string(PP)));
-
-						}
-					}
 
 					 MapStars = (sData.Mods & (NoFail | Relax | Relax2)) ? 0.f : ezpp_stars(ez);
 
-				}else{
-					constexpr auto b = PacketBuilder::CT::String_Packet(Packet::Server::notification, "That gamemode is currently not supported for pp.\nYour score will still be saved for future calculations.");
-					u->addQueArray(b);
-					goto SENDSCORE;
+				} else {
+					if ((sData.count300 + sData.count100 + sData.count50 + sData.countMiss) == 0)
+						PP = 0.f;
+					else
+						PP = float(float(sData.count50 * 50 + sData.count100 * 100 + sData.count300 * 300) / ((sData.count300 + sData.count100 + sData.count50 + sData.countMiss) * 300)) * 100;
+					MapStars = 0.f;
+				}
+				if (!Loved && PP < 30000.f) {
+					if (((sData.Mods & Relax) && PP > 1400.f) || (!(sData.Mods & Relax) && PP > 700.f)) {
+
+						UpdateQue.emplace_back(UserID, (u32)0, _UserUpdate::Restrict, (size_t)new std::string("Restricted for too much pp in a single play: " + std::to_string(PP)));
+
+					}
 				}
 			}
 			_ScoreCache sc(sData,u.User->UserID,PP);
