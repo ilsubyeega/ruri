@@ -1,9 +1,9 @@
 /*#define USERID_START 1000
 #define M_BOT_NAME "ruri"
 #define BOT_LOCATION 0*/
-#define USERID_START 10
-#define M_BOT_NAME "Chloe"
-#define BOT_LOCATION 111
+#define USERID_START 1
+#define M_BOT_NAME "Keesu"
+#define BOT_LOCATION 119
 
 #define BANCHO_THREAD_COUNT 4
 #define ARIA_THREAD_COUNT 4
