@@ -1250,7 +1250,11 @@ void ScoreServerHandle(const _HttpRes &res, _Con s){
 						PP = ezpp_pp(ez);
 						MapStars = (sData.Mods & (NoFail | Relax | Relax2)) ? 0.f : ezpp_stars(ez);
 					} else {
-						PP = 1.f;
+
+						if ((sData.count300 + sData.count100 + sData.count50 + sData.countMiss) == 0)
+							PP = 0.f;
+
+						PP= float(float(sData.count50 * 50 + sData.count100 * 100 + sData.count300 * 300) / ((sData.count300 + sData.count100 + sData.count50 + sData.countMiss) * 300)) * 100;
 						MapStars = 0.f;
 					}
 					if (!Loved && PP < 30000.f){
