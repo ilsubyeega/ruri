@@ -2212,14 +2212,14 @@ namespace PacketBuilder::CT::BotInfo {
 
 	constexpr const auto Bot_Panel = PopulateHeader(Concate(
 		PacketHeader(Packet::Server::userPanel),
-		Number<int>(USERID_START - 1), String(M_BOT_NAME), Number<byte>(0), Number<byte>(BOT_LOCATION), Number<byte>(UserType::Peppy),
+		Number<int>(BOT_LOCATION), String(M_BOT_NAME), Number<byte>(0), Number<byte>(BOT_LOCATION), Number<byte>(UserType::Peppy),
 		Number<int>(0), Number<int>(0), Number<int>(0)
 	));
 
 	constexpr const auto Bot_Stats = PopulateHeader(
 		Concate(
 			PacketHeader(Packet::Server::userStats),
-			Number<int>(USERID_START - 1), Number<byte>(0), Number<byte>(0), Number<byte>(0), Number<int>(0), Number<byte>(0), Number<int>(0), Number<long long>(0),
+			Number<int>(BOT_LOCATION), Number<byte>(0), Number<byte>(0), Number<byte>(0), Number<int>(0), Number<byte>(0), Number<int>(0), Number<long long>(0),
 			Number<int>(0), Number<int>(0), Number<long long>(0), Number<int>(0), Number<short>(0)
 		));
 }
