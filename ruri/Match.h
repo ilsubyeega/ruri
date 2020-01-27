@@ -282,52 +282,52 @@ namespace bPacket{
 
 
 	template<const bool SendPassword = 1>
-		VEC(byte) bMatch(_Match *m){
+	VEC(byte) bMatch(_Match* m) {
 
-			VEC(byte) Res; Res.reserve(256);
-			
-			if constexpr(SendPassword)
-				PacketBuilder::Build<Packet::Server::updateMatch,'w','b','b','i','s','s','s','i','s'>(Res, m->MatchId, (m->inProgress || m->PlayersLoading), m->Settings.MatchType, m->Settings.Mods, &m->Settings.Name,
-					&m->Settings.Password,&m->Settings.BeatmapName, m->Settings.BeatmapID,&m->Settings.BeatmapChecksum);
-			else{
-				m->Settings.Password.size() ?
+		VEC(byte) Res; Res.reserve(256);
+
+		if constexpr (SendPassword)
+			PacketBuilder::Build<Packet::Server::updateMatch, 'w', 'b', 'b', 'i', 's', 's', 's', 'i', 's'>(Res, m->MatchId, (m->inProgress || m->PlayersLoading), m->Settings.MatchType, m->Settings.Mods, &m->Settings.Name,
+				&m->Settings.Password, &m->Settings.BeatmapName, m->Settings.BeatmapID, &m->Settings.BeatmapChecksum);
+		else {
+			m->Settings.Password.size() ?
 				PacketBuilder::Build<Packet::Server::updateMatch, 'w', 'b', 'b', 'i', 's', '-', 's', 'i', 's'>(Res, m->MatchId, (m->inProgress || m->PlayersLoading), m->Settings.MatchType, m->Settings.Mods, &m->Settings.Name,
 					STACK("*"), &m->Settings.BeatmapName, m->Settings.BeatmapID, &m->Settings.BeatmapChecksum) : PacketBuilder::Build<Packet::Server::updateMatch, 'w', 'b', 'b', 'i', 's', 'b', 's', 'i', 's'>(Res, m->MatchId, (m->inProgress || m->PlayersLoading), m->Settings.MatchType, m->Settings.Mods, &m->Settings.Name,
 						0, &m->Settings.BeatmapName, m->Settings.BeatmapID, &m->Settings.BeatmapChecksum);
-			}
-
-			for (const auto& Slot : m->Slots)
-				Res.push_back(Slot.SlotStatus);
-			for (const auto& Slot : m->Slots)
-				Res.push_back(Slot.SlotTeam);
-
-			for (const auto& Slot : m->Slots)
-				if(Slot.User)
-					AddStream(Res, Slot.User->UserID);
-
-			AddStream(Res, m->HostID);
-			Res.push_back(m->Settings.PlayMode);
-			Res.push_back(m->Settings.ScoringType);
-			Res.push_back(m->Settings.TeamType);
-			Res.push_back(m->Settings.FreeMod);
-
-			if (m->Settings.FreeMod){
-
-				DWORD Mods[NORMALMATCH_MAX_COUNT];
-
-				for (DWORD i = 0; i < NORMALMATCH_MAX_COUNT; i++){
-					if (!m->Slots[i].User)Mods[i] = 0;
-					else Mods[i] = m->Slots[i].CurrentMods;
-				}
-
-				AddMem(Res, Mods, 64);
-			}
-			AddStream(Res, m->Seed);
-
-			*(DWORD*)&Res[3] = Res.size() - 7;
-
-			return Res;
 		}
+
+		for (const auto& Slot : m->Slots)
+			Res.push_back(Slot.SlotStatus);
+		for (const auto& Slot : m->Slots)
+			Res.push_back(Slot.SlotTeam);
+
+		for (const auto& Slot : m->Slots)
+			if (Slot.User)
+				AddStream(Res, Slot.User->UserID);
+
+		AddStream(Res, m->HostID);
+		Res.push_back(m->Settings.PlayMode);
+		Res.push_back(m->Settings.ScoringType);
+		Res.push_back(m->Settings.TeamType);
+		Res.push_back(m->Settings.FreeMod);
+
+		if (m->Settings.FreeMod) {
+
+			DWORD Mods[NORMALMATCH_MAX_COUNT];
+
+			for (DWORD i = 0; i < NORMALMATCH_MAX_COUNT; i++) {
+				if (!m->Slots[i].User)Mods[i] = 0;
+				else Mods[i] = m->Slots[i].CurrentMods;
+			}
+
+			AddMem(Res, Mods, 64);
+		}
+		AddStream(Res, m->Seed);
+
+		*(DWORD*)&Res[3] = Res.size() - 7;
+
+		return Res;
+	}
 
 }
 
