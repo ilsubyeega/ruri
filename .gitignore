@@ -6,6 +6,8 @@ start.sh
 screenlog.0
 screenlog.*
 config.json
+ruris
+.ruris
 
 # User-specific files
 *.suo
