@@ -988,6 +988,7 @@ Achievement GetAchievementsFromScore(const _Score &s, const float StarDiff) {
 
 	u32& Bytes = Ret.General[al_clamp((int)s.GameMode,0, GM_MAX)];
 
+	/* Removed for a moment (Bug)
 	if (s.MaxCombo >= 500)
 		Bytes |= Achievement::Combo500;
 	if (s.MaxCombo >= 750)
@@ -1006,6 +1007,7 @@ Achievement GetAchievementsFromScore(const _Score &s, const float StarDiff) {
 
 		StarCount--;
 	}
+	*/
 
 	return Ret;
 }
@@ -1288,7 +1290,8 @@ void ScoreServerHandle(const _HttpRes &res, _Con s){
 					"|chartName: Beatmap Ranking" + ClientScoreUpdate;
 				
 				//TODO: might want to add overall stats
-				std::string achievements;
+				// Bug sucks
+				/*std::string achievements;
 				
 				Achievement New = GetAchievementsFromScore(sData, MapStars);
 
@@ -1301,7 +1304,7 @@ void ScoreServerHandle(const _HttpRes &res, _Con s){
 						" WHERE id=" + std::to_string(u->UserID) + " LIMIT 1;");
 
 					Charts += "|achievements-new: " + achievements + "\n";
-				}else Charts += "\n";
+				}else */Charts += "\n";
 			}
 			
 			s.SendData(ConstructResponse(200, Empty_Headers, Charts));
