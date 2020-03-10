@@ -237,8 +237,6 @@ struct _LeaderBoardCache{
 		int LastRank = 0;
 		_ScoreCache LastScore;
 
-		if (s.Loved)
-			s.Score = int(s.pp + 0.5f);
 
 		VEC(_SQLKey) ScoreInsert = {
 			_SQLKey("beatmap_md5", std::string(MD5)),
@@ -265,7 +263,7 @@ struct _LeaderBoardCache{
 			if (ScoreCache[i].UserID == s.UserID){
 				LastScore = ScoreCache[i];
 				Done = 1;
-				if ((!s.Loved) ? (ScoreCache[i].pp < s.pp) : (ScoreCache[i].Score < s.Score)){
+				if (ScoreCache[i].Score < s.Score){
 
 					if (SQL){
 
@@ -1466,7 +1464,7 @@ void osu_getScores(const _HttpRes& http, _Con s){
 			if (s.UserID != 0) {
 				Response += std::to_string(s.ScoreID);//online id
 				Response += "|" + u.User->Username;//player name
-				Response += "|" + std::to_string((!Loved && Mode > 3) ? int(s.pp + 0.5f) : s.Score);//total score
+				Response += "|" + std::to_string(s.Score);//total score
 				Response += "|" + std::to_string(s.MaxCombo);//max combo
 				Response += "|" + std::to_string(s.count50);//count 50
 				Response += "|" + std::to_string(s.count100);//count 100
@@ -1501,7 +1499,7 @@ void osu_getScores(const _HttpRes& http, _Con s){
 					|| (LType == RankingType::Friends && !u.User->isFriend(lScore->UserID)))
 					continue;
 
-				const int Score = (!Loved && (Mode > 3 || LType == RankingType::Country)) ? int(lScore->pp + 0.5f) : lScore->Score;
+				const int Score = (LType == RankingType::Country) ? int(lScore->pp + 0.5f) : lScore->Score;
 
 				if (Score < 0)
 					continue;
@@ -1614,7 +1612,7 @@ void GetReplay(const std::string_view URL, _Con s){
 
 void Thread_DownloadOSZ(const DWORD MapID, _Con s){
 
-	s.SendData(GET_WEB(MIRROR_IP, "d/" + std::to_string(MapID)));
+	s.SendData(GET_WEB("bloodcat.com", "osu/s/" + std::to_string(MapID)));
 
 	return s.Dis();
 }
@@ -1764,6 +1762,7 @@ namespace MIRROR {
 				for (auto& [req,Con] : QueCopy){
 					if constexpr (UsingRawMirror) {
 						Con.SendData(GET_WEB(MIRROR_IP, req));
+						printf("%s\n", req.c_str());
 						Con.Dis();
 					}
 				}

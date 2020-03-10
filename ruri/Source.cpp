@@ -148,7 +148,7 @@ enum RankStatus {
 
 #define TAG "\n   > Compiled with " KMAG COMPILER_NAME KRESET" on " __DATE__" " __TIME__".\n\n"
 
-#define MIRROR_IP "34.94.215.186"
+#define MIRROR_IP "manual.leu.kr"
 #define MIRROR_PORT 80
 
 #define MAX_USER_COUNT 256
@@ -3980,7 +3980,6 @@ void HandleBanchoPacket(_Con s, const _HttpRes &&RES,const uint64_t choToken) {
 			return BanchoIncorrectLogin(s);
 
 		std::string Username = USERNAMESQL(LoginData[0]);
-
 		const _MD5 cPassword(USERNAMESQL(LoginData[1]));
 
 		const auto ClientData = Explode_View(LoginData[2],'|', 5);

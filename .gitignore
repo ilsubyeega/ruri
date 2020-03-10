@@ -5,6 +5,7 @@
 config.json
 ruris
 screenlog*
+screenlog.0
 # User-specific files
 *.suo
 *.user
